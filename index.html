@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KES EDGEFLO V9.9 - KAS-INC-FLO FIREBASE</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box;font-family:'Inter',sans-serif;max-width:100%}
+html,body{overflow-x:hidden!important;width:100%;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
+img,canvas,iframe,table{max-width:100%}
+:root{--bg:#0b0e14;--sidebar:#0f111a;--card:#141824;--card2:#0b0e14;--border:#1f2430;--text:#e5e7eb;--muted:#9ca3af;--muted2:#6b7280;--input:#0b0e14;--input-border:#374151;--gold:#facc15}
+[data-theme="light"]{--bg:#f1f5f9;--sidebar:#ffffff;--card:#ffffff;--card2:#f8fafc;--border:#e2e8f0;--text:#0f172a;--muted:#475569;--muted2:#94a3b8;--input:#ffffff;--input-border:#cbd5e1;--gold:#b45309}
+.sidebar{width:260px;min-width:260px;max-width:260px;background:var(--sidebar);border-right:1px solid var(--border);padding:16px 12px;position:fixed;top:0;bottom:0;left:0;overflow-y:auto;overflow-x:hidden;z-index:10}
+.logo{font-size:18px;font-weight:800;padding:4px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.logo span{color:var(--gold)}
+.cloud{background:#0a2e1a;border:1px solid #14532d;border-radius:10px;padding:10px;font-size:11px;margin:10px 0;color:#fff}.cloud b{color:#4ade80}
+.cloud.firebase{background:#1e1b2e;border-color:#7c3aed}.cloud.firebase b{color:#c4b5fd}
+.acc-label{font-size:10px;letter-spacing:1px;color:var(--muted2);margin:14px 8px 8px}
+.acc{display:flex;gap:6px;flex-wrap:wrap;padding:0 4px}.acc button{border:1px solid var(--border);background:var(--card);color:var(--text);padding:7px 10px;border-radius:999px;font-size:11px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.acc button.active{background:var(--gold);color:#000;font-weight:700}
+.logout{margin:10px 4px;width:calc(100% - 8px);background:#7f1d1d;border:1px solid #ef4444;color:#fff;padding:10px;border-radius:10px;cursor:pointer;font-weight:700}
+.nav button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:transparent;border:0;color:var(--muted);padding:11px 10px;border-radius:10px;cursor:pointer;font-size:13.5px;white-space:nowrap;overflow:hidden}.nav button.active{background:#2a2110;color:var(--gold);border:1px solid #3a2f14}
+[data-theme="light"] .nav button.active{background:#fef3c7}
+.badge{margin-left:auto;background:var(--gold);color:#000;font-size:10px;padding:2px 6px;border-radius:999px;font-weight:700;flex-shrink:0}
+.main{margin-left:260px;flex:1;padding:20px 22px;width:calc(100% - 260px);max-width:calc(100% - 260px);min-width:0;overflow-x:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.top h1{font-size:26px;margin:0;word-break:break-word}.top h1 span{background:linear-gradient(90deg,#facc15,#f472b6,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.top p{margin:4px 0;color:var(--muted);font-size:13px}
+.search{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.search input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:999px;width:200px;outline:none}.avatar{width:36px;height:36px;min-width:36px;border-radius:50%;background:linear-gradient(135deg,#facc15,#ec4899);display:grid;place-items:center;font-weight:800;color:#000;cursor:pointer}
+.theme-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:999px;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px;width:100%}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;min-height:130px;min-width:0;overflow:hidden;word-wrap:break-word}.card small{font-size:10px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase}.card h2{font-size:28px;margin:10px 0 6px;word-break:break-word}.card p{font-size:12px;color:var(--muted);margin:0;word-break:break-word}.card input{width:100%;background:var(--input);border:1px solid var(--input-border);color:var(--text);padding:9px;border-radius:8px;margin-top:8px;min-width:0}
+.bar{height:6px;background:var(--card2);border-radius:999px;margin-top:10px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
+.green{color:#22c55e}.red{color:#ef4444}
+.tabs{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}.tabs button{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}.tabs button.active{background:var(--text);color:var(--bg);font-weight:700}
+.panel{display:none;width:100%;overflow-x:hidden}.panel.active{display:block}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;width:100%}
+label{font-size:12px;color:var(--muted)}input,select,textarea{width:100%;background:var(--input);border:1px solid var(--input-border);color:var(--text);padding:11px;border-radius:10px;margin:6px 0 10px;outline:none;min-width:0}
+button.primary{width:100%;background:var(--gold);color:#000;border:0;padding:13px;border-radius:10px;font-weight:800;cursor:pointer}button.primary:disabled{background:#374151;color:#9ca3af}
+button.ghost{width:100%;background:var(--card2);color:var(--text);border:1px solid var(--border);padding:11px;border-radius:10px;cursor:pointer;margin-top:8px}
+button.mini{background:var(--card2);color:var(--text);border:1px solid var(--border);padding:6px 10px;border-radius:999px;cursor:pointer;font-size:11px;white-space:nowrap}
+.table-wrap{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:480px}th,td{padding:10px;border-bottom:1px solid var(--border);text-align:left;word-break:break-word}
+.guard-block{background:#7f1d1d;border:1px solid #ef4444;color:#fff;padding:12px;border-radius:12px;margin-top:12px;font-size:13px;word-break:break-word}.guard-ok{background:#052e16;border:1px solid #22c55e;color:#fff;padding:12px;border-radius:12px;margin-top:12px;font-size:13px}
+[data-theme="light"] .guard-ok{color:#065f46}
+.footer{margin-top:18px;display:flex;justify-content:space-between;color:var(--muted2);font-size:12px;flex-wrap:wrap;gap:8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99;display:none;align-items:center;justify-content:center;padding:12px;overflow-x:hidden}.modal.open{display:flex}.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;overflow-x:hidden;padding:18px}
+.pill{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}.pill-green{background:#052e16;color:#4ade80}.pill-red{background:#3f0d0d;color:#f87171}.pill-yellow{background:#2a2110;color:#facc15}
+.check-pro{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;width:100%;overflow:hidden}
+.check-pro-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.check-pro-head small{font-size:11px;letter-spacing:1.5px;color:var(--muted2);font-weight:700}.check-pro-head b{color:var(--gold);font-size:12px;flex-shrink:0}
+.check-progress{height:4px;background:var(--card2);border-radius:999px;margin:10px 0 14px;overflow:hidden;border:1px solid var(--border)}.check-progress i{display:block;height:100%;background:var(--gold)}
+.check-row{display:flex;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;width:100%}.check-row:hover{border-color:var(--gold)}.check-row.done{border-color:#22c55e;background:rgba(34,197,94,.06)}
+.check-circle{width:28px;height:28px;min-width:28px;border-radius:50%;border:2px solid var(--muted2);display:grid;place-items:center;flex-shrink:0;font-size:14px;font-weight:800;color:transparent}.check-row.done .check-circle{background:#22c55e;border-color:#22c55e;color:#fff}
+.check-main{flex:1;min-width:0}.check-title{font-size:13px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.check-row.done .check-title{color:#22c55e;text-decoration:line-through}.check-sub{font-size:11px;color:var(--muted2);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.check-row.done .check-sub{color:#22c55e}
+.switch{position:relative;width:44px;height:24px;min-width:44px;flex-shrink:0}.switch input{opacity:0;width:0;height:0}.switch-slider{position:absolute;inset:0;background:#374151;border-radius:999px;cursor:pointer}.switch-slider:before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%}.switch input:checked + .switch-slider{background:#22c55e}.switch input:checked + .switch-slider:before{transform:translateX(20px)}
+.check-x{width:30px;height:30px;min-width:30px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);display:grid;place-items:center;cursor:pointer;flex-shrink:0}.check-x:hover{border-color:#ef4444;color:#ef4444}.check-edit{width:30px;height:30px;min-width:30px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--muted);display:grid;place-items:center;cursor:pointer;flex-shrink:0}.check-edit:hover{border-color:var(--gold);color:var(--gold)}
+.check-add-input{background:var(--card2)!important;border:1px solid var(--border)!important;padding:13px 14px!important;border-radius:12px!important;font-size:13px!important;margin:0!important}.check-add-btn{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:12px;font-weight:700;cursor:pointer;margin-top:10px}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;width:100%}.calc-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;min-width:0;overflow:hidden}.calc-label{font-size:11px;letter-spacing:1px;color:var(--muted2);font-weight:700;text-transform:uppercase;margin:14px 0 6px}.calc-input{background:var(--card2)!important;border:1px solid var(--border)!important;padding:12px 14px!important;border-radius:10px!important;font-size:14px!important;font-weight:700!important;margin:0!important}.pair-pills{display:flex;gap:8px;flex-wrap:wrap}.pair-pill{padding:9px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);cursor:pointer;font-size:12px;font-weight:700}.pair-pill.active{background:var(--gold);color:#000}.calc-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.calc-btn{width:100%;background:var(--gold);color:#000;border:0;padding:14px;border-radius:12px;font-weight:800;cursor:pointer;font-size:13px;margin-top:16px}.result-hero{background:linear-gradient(135deg,#2a2110,#1a1520);border:1px solid #3a2f14;border-radius:14px;padding:18px;text-align:center}[data-theme="light"] .result-hero{background:#fef3c7}.result-hero h2{font-size:36px;margin:8px 0 4px;color:var(--gold)}.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.result-box{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px}.result-box b{font-size:18px;display:block;margin-top:6px}.use-lot-btn{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:12px;font-weight:700;cursor:pointer;margin-top:14px}.quick-table{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-top:16px}.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.quick-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}.quick-card .lot{color:var(--gold);font-weight:800}
+.cal-header{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;width:100%;overflow:hidden}.cal-title-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px}.cal-title{font-size:20px;font-weight:800;margin:0}.cal-subtitle{font-size:12px;color:var(--muted);margin-top:4px}.cal-nav{display:flex;gap:6px;flex-wrap:wrap}.cal-nav button{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;white-space:nowrap}.cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:16px}.cal-week div{text-align:center;font-size:11px;color:var(--muted);font-weight:700}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.cal-day{background:var(--card2);border:1px solid var(--border);border-radius:14px;min-height:110px;padding:10px;cursor:pointer;min-width:0;overflow:hidden;word-break:break-word}.cal-day.today{border:2px solid var(--gold)}.cal-day.win{background:rgba(34,197,94,.12);border-color:#22c55e}.cal-day.loss{background:rgba(239,68,68,.12);border-color:#ef4444}.cal-day .no-trade{font-size:11px;color:var(--muted2);margin-top:8px}
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;width:100%;overflow:hidden}.chart-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.chart-pill{padding:9px 16px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);cursor:pointer;font-size:12px;font-weight:700}.chart-pill.active{background:var(--gold);color:#000}.chart-frame{width:100%;height:520px;border:0;border-radius:12px;background:#000;display:block}
+canvas{width:100%!important;height:auto;max-height:280px;background:var(--card2);border-radius:12px;margin-top:12px;display:block}
+.debug{background:#fef3c7;color:#92400e;border:1px solid #facc15;border-radius:10px;padding:10px;font-size:12px;margin-top:12px;display:none}
+[data-theme="dark"] .debug{background:#2a2110;color:#facc15}
+.deposit-ok{color:#22c55e;font-size:12px;font-weight:700;margin-top:4px;min-height:16px}
+.acc-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.forgot-link{color:var(--gold);font-size:12px;cursor:pointer;text-decoration:underline;display:inline-block;margin-top:8px}
+.firebase-badge{background:#1e1b2e;border:1px solid #7c3aed;color:#c4b5fd;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700}
+@media(max-width:900px){.sidebar{display:none}.main{margin-left:0;width:100%;max-width:100%;padding:14px 12px}.kpi-grid{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.calc-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}.cal-grid{grid-template-columns:repeat(2,1fr)}.chart-frame{height:420px}.check-title{white-space:normal}}
+@media(max-width:480px){.kpi-grid{grid-template-columns:1fr}.calc-2col{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="logo">KES EDGEFLO <span>V9.9</span> <small style="font-size:10px;color:#6b7280">- KAS-INC-FLO</small></div>
+  <div class="cloud firebase">🔥 <b>FIREBASE AUTH ACTIVE</b><br><small id="syncText">Locked - Login with Email</small><br><small id="firebaseUserText" style="color:#c4b5fd"></small></div>
+  <div class="acc-label">ACCOUNTS - 5 ACCOUNTS - ONE FIREBASE LOGIN</div>
+  <div class="acc" id="accountBtns">
+    <button data-acc="fbsDemo">FBS Demo</button>
+    <button data-acc="fbsReal">FBS Real</button>
+    <button data-acc="fbsReal2">FBS Real 2</button>
+    <button data-acc="fpLive">FP Markets Live</button>
+    <button data-acc="funded">Funded Account</button>
+  </div>
+  <button class="logout" onclick="logout()">🔒 Logout / Switch</button>
+  <div class="nav" id="nav">
+    <button data-page="dashboard" class="active">📊 Dashboard</button>
+    <button data-page="wmt">💎 Funded $5K <span class="badge">LIVE</span></button>
+    <button data-page="calculator">🧮 Lot Calculator</button>
+    <button data-page="routines">🔥 Routines</button>
+    <button data-page="process">⚙️ Process</button>
+    <button data-page="rules">📜 Rules</button>
+    <button data-page="journal">📓 Journal</button>
+    <button data-page="calendar">📅 Calendar</button>
+    <button data-page="charts">📈 Live Charts</button>
+    <button data-page="guard">🛡️ Trade Guard</button>
+    <button data-page="logins">🔑 Account Logins</button>
+  </div>
+  <div style="margin:16px 8px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px">
+    <small style="color:var(--muted2)">EDGESCORE</small><h2 id="sideEdge" style="margin:6px 0;color:var(--gold)">--</h2>
+    <div class="bar"><i id="sideEdgeBar" style="width:0%"></i></div>
+    <p style="font-size:11px;color:var(--muted)" id="sideEdgeText">Login to see score.</p>
+    <p style="font-size:11px;color:var(--gold)" id="reviewCount">Reviews: -</p>
+    <p style="font-size:11px;color:var(--muted)" id="accInfo"></p>
+    <p style="font-size:11px;color:var(--muted)" id="debugAcc"></p>
+  </div>
+  <p style="font-size:11px;color:var(--muted2);text-align:center">KES INC © 2026 • Kakamega, KE<br>Firebase: kas-inc-flo • London Only • 3 Pairs Only</p>
+</div>
+
+<div class="main">
+  <div class="top">
+    <div><h1>Dashboard <span id="dashAccName">- Login Required -</span></h1><p id="greeting">Good evening, Chairman • London Session • <span class="green">● Market Open</span> • <span class="firebase-badge">🔥 kas-inc-flo</span></p></div>
+    <div class="search"><button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙 Dark</button><input id="searchInput" placeholder="Search pair..."><div class="avatar" onclick="openPasswordModal()" title="Change Password">K</div></div>
+  </div>
+  <div id="guardBanner" class="guard-ok" style="margin-top:14px">🔒 Login with Firebase Email to unlock Guard.</div>
+  <div id="debugBox" class="debug"></div>
+
+  <div class="kpi-grid">
+    <div class="card"><small>Total Balance</small><h2 id="totalBal">--</h2><p>Formula: <b>Deposit + P/L - Withdrawn</b></p><p id="balanceFormula" style="color:var(--gold);margin-top:6px;font-size:12px"></p><p id="tradesCountText" style="font-weight:700;color:var(--gold);margin-top:6px"></p></div>
+    <div class="card"><small>Deposited</small><h2 id="deposited">--</h2><input id="depositInput" value="0" type="number" step="0.01" placeholder="Type deposit e.g. 500"><div id="depositMsg" class="deposit-ok"></div><p style="font-size:11px">Type → Total updates instantly.</p><button class="mini" onclick="saveDeposit()">💾 Save Deposit</button> <button class="mini" onclick="addDeposit(100)">+ $100</button> <button class="mini" onclick="addDeposit(500)">+ $500</button></div>
+    <div class="card"><small>Withdrawn</small><h2 id="withdrawn">--</h2><input id="withdrawInput" value="0" type="number" step="0.01" placeholder="Type withdrawn"><div id="withdrawMsg" class="deposit-ok"></div><p class="red" style="font-size:11px">Type → Total drops instantly.</p><button class="mini" onclick="saveWithdraw()">💾 Save Withdrawn</button></div>
+    <div class="card"><small>Closed P/L</small><h2 id="closedPL" class="green">--</h2><p id="closedPct">--</p><p id="todayPLText" style="margin-top:6px">Today: --</p></div>
+  </div>
+  <div class="kpi-grid">
+    <div class="card"><small>Winrate</small><h2 id="winRate">--</h2><p id="winLossText">--</p><div class="bar"><i id="winBar" style="width:0%"></i></div></div>
+    <div class="card"><small>Profit Factor</small><h2 id="profitFactor">--</h2><p>Gross Win / Gross Loss</p><div class="bar"><i id="pfBar" style="width:0%"></i></div></div>
+    <div class="card"><small>Most Traded</small><h2 id="mostTraded">-</h2><p id="mostTradedSub">Edge pair</p></div>
+    <div class="card"><small>Avg Win / Loss</small><h2 id="avgWinLoss">--</h2><p id="avgRText">--</p></div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button data-tab="overview" class="active">Overview</button><button data-tab="calculator">Lot Calculator</button><button data-tab="routines">Routines</button><button data-tab="process">Process</button><button data-tab="rules">Rules</button><button data-tab="journal">Journal</button><button data-tab="calendar">Calendar</button><button data-tab="charts">Live Charts</button><button data-tab="guard">Trade Guard</button><button data-tab="logins">Account Logins</button>
+  </div>
+
+  <div class="panel active" id="panel-overview">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div><b>Equity — Candlesticks</b> <span style="color:var(--gold);font-size:12px">● Live</span></div><div><button onclick="forceRefresh()" style="background:var(--gold);border:0;padding:8px 12px;border-radius:999px;font-weight:700;cursor:pointer">🔄 Refresh Dashboard</button></div></div>
+      <canvas id="candleCanvas" width="1100" height="280"></canvas>
+      <div class="grid2">
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px"><b>🤖 FloAI Report</b><p id="aiReport" style="font-size:13px">Login to see.</p><button class="ghost" onclick="openReviewList()">📓 Open Unreviewed</button></div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px"><b>📍 Session</b><p style="font-size:13px">London: <span class="green" id="londonStats">--</span> NY: <span id="nyStats">--</span> Asia: <span id="asiaStats">--</span></p><p id="cooldownText" style="color:var(--gold)"></p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-wmt">
+    <div class="grid2">
+      <div class="card"><h3>💎 Funded Account - WeMasterTrade $5K</h3><p>Target $400 • <span id="wmtTargetText"></span></p><div class="bar"><i id="wmtBar" style="width:0%;background:#22c55e"></i></div><p style="margin-top:10px">Balance: <b id="wmtBal">$5000</b> • Daily Left: <b id="wmtDaily">$250</b> • Max Left: <b id="wmtMax">$500</b></p><label>Funded Balance</label><input id="wmtBalInput" value="5000"><label>Today P/L</label><input id="wmtTodayInput" value="0"><button class="primary" onclick="saveWMT()">Save Funded Balance</button></div>
+      <div class="card"><h3>🎯 Safe Lot</h3><p>20 pips = 0.20 • 25 pips = 0.18 • 30 pips = 0.17 • MAX 0.36</p><label>SL pips</label><input id="wmtSL" value="20" type="number"><button class="ghost" onclick="calcWMTLot()">Calculate Safe Lot</button><p id="wmtLotResult"></p></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-calculator">
+    <div class="calc-grid">
+      <div class="calc-card">
+        <h3>⚙️ Inputs</h3>
+        <div class="calc-label">Account Balance</div><input class="calc-input" id="calcBal" type="number" step="0.01" value="10.01">
+        <div class="calc-label">Select Pair</div>
+        <div class="pair-pills" id="pairPills">
+          <button class="pair-pill active" data-pair="EURUSD" onclick="selectCalcPair('EURUSD')">EURUSD</button>
+          <button class="pair-pill" data-pair="GBPJPY" onclick="selectCalcPair('GBPJPY')">GBPJPY</button>
+          <button class="pair-pill" data-pair="GBPUSD" onclick="selectCalcPair('GBPUSD')">GBPUSD</button>
+        </div>
+        <div class="calc-2col">
+          <div><div class="calc-label">Risk %</div><input class="calc-input" id="calcRisk" type="number" step="0.1" value="1"></div>
+          <div><div class="calc-label">Stop Loss (pips)</div><input class="calc-input" id="calcSLPips" type="number" value="28"></div>
+        </div>
+        <div class="calc-2col">
+          <div><div class="calc-label">USDJPY Rate</div><input class="calc-input" id="calcJPY" type="number" value="150"></div>
+          <div><div class="calc-label">RR</div><input class="calc-input" id="calcRR" type="number" step="0.5" value="2"></div>
+        </div>
+        <div style="display:none"><input id="calcEntry"><input id="calcSL"></div>
+        <button class="calc-btn" onclick="calcLotPro()">🧮 CALCULATE LOT SIZE</button>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px">Pip Value: EURUSD $10.00 / GBPUSD $10.00 / GBPJPY $6.67 at 150 JPY.</p>
+        <div class="card" style="padding:12px;margin-top:12px"><h3 style="margin:0 0 8px">🎯 Expiry Levels</h3><label>Pair</label><select id="expPair"><option>EURUSD</option><option>GBPUSD</option><option>GBPJPY</option></select><label>Upper</label><input id="expUpper"><label>Lower</label><input id="expLower"><label>King</label><input id="expKing"><label>Bias</label><select id="expBias"><option>Select Bias</option><option>BUY - Sweep Low + Reclaim</option><option>SELL - Sweep High + Reject</option><option>NO TRADE</option></select><button class="primary" onclick="saveExpiry()">Save Range</button><p id="expResult"></p></div>
+      </div>
+      <div class="calc-card">
+        <h3>📊 Results — <span id="resultPair" style="color:var(--gold)">EURUSD</span></h3>
+        <div class="result-hero"><small>RECOMMENDED LOT SIZE</small><h2 id="resultLot">0.01 lots</h2><p id="resultSub">EURUSD • Risk $0.10 • SL 28 pips</p></div>
+        <div class="result-grid">
+          <div class="result-box"><small>RISK AMOUNT</small><b id="resultRiskAmt" style="color:#ef4444">$0.10</b></div>
+          <div class="result-box"><small>PIP VALUE / LOT</small><b id="resultPipVal" style="color:var(--gold)">$10.00</b></div>
+          <div class="result-box"><small>STOP LOSS VALUE</small><b id="resultSLVal">$2.80 risk</b></div>
+          <div class="result-box"><small>TAKE PROFIT</small><b id="resultTP" style="color:#22c55e">56 pips</b></div>
+        </div>
+        <p id="calcResult" style="font-size:12px;color:var(--muted);margin-top:10px"></p>
+        <button class="use-lot-btn" onclick="useLotInJournal()">📓 Use This Lot in Journal</button>
+      </div>
+    </div>
+    <div class="quick-table">
+      <h3 style="margin:0">Quick Table — Your Total Balance: <span id="quickBal" style="color:var(--gold)">$10.01</span></h3>
+      <div class="quick-grid">
+        <div class="quick-card"><b>EURUSD 1% Risk</b><p>SL 25p</p><div class="lot" id="qtEUR25">0.00 lots</div><p>SL 30p</p><div class="lot" id="qtEUR30">0.00 lots</div></div>
+        <div class="quick-card"><b>GBPUSD 1% Risk</b><p>SL 25p</p><div class="lot" id="qtGBPUSD25">0.00 lots</div><p>SL 30p</p><div class="lot" id="qtGBPUSD30">0.00 lots</div></div>
+        <div class="quick-card"><b>GBPJPY 1% Risk</b><p>SL 25p</p><div class="lot" id="qtGBPJPY25">0.00 lots</div><p>SL 30p</p><div class="lot" id="qtGBPJPY30">0.00 lots</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-routines">
+    <h1 style="font-size:28px;margin:0 0 6px">🔥 Routines</h1><p style="color:var(--muted);font-size:13px">Pre-market routine. Must tick before 10am London.</p>
+    <div class="check-pro" style="margin-top:14px"><div class="check-pro-head"><small>ROUTINES • PROGRESS</small><b id="routinePct">0%</b></div><div class="check-progress"><i id="routineBar" style="width:0%"></i></div><div id="routineList"></div><input class="check-add-input" id="add-routine" placeholder="+ Add routine"><button class="check-add-btn" onclick="addFromInput('routine')">Add</button></div>
+    <button class="ghost" onclick="resetChecklists()">Reset Today's Ticks Only</button>
+  </div>
+  <div class="panel" id="panel-process">
+    <h1 style="font-size:28px;margin:0 0 6px">⚙️ Process</h1><p style="color:var(--muted);font-size:13px">Your execution process — during every trade.</p>
+    <div class="check-pro" style="margin-top:14px"><div class="check-pro-head"><small>PROCESS • PROGRESS</small><b id="processPct">0%</b></div><div class="check-progress"><i id="processBar" style="width:0%"></i></div><div id="processList"></div><input class="check-add-input" id="add-process" placeholder="+ Add process step"><button class="check-add-btn" onclick="addFromInput('process')">Add</button></div>
+    <button class="ghost" onclick="resetChecklists()">Reset Today's Ticks Only</button>
+  </div>
+  <div class="panel" id="panel-rules">
+    <h1 style="font-size:28px;margin:0 0 6px">Trading Rules</h1><p style="color:var(--muted);font-size:13px">Your non-negotiable rules. Guard enforces them.</p>
+    <div class="check-pro" style="margin-top:14px"><div class="check-pro-head"><small>TRADING RULES • PROGRESS</small><b id="rulesPct">0%</b></div><div class="check-progress"><i id="rulesBar" style="width:0%"></i></div><div id="rulesList"></div><input class="check-add-input" id="add-rules" placeholder="+ Add rule"><button class="check-add-btn" onclick="addFromInput('rules')">Add</button></div>
+    <button class="ghost" onclick="resetChecklists()">Reset Today's Ticks Only</button>
+  </div>
+
+  <div class="panel" id="panel-journal">
+    <div class="grid2">
+      <div class="card">
+        <h3>📝 Add Trade - 3 Pairs Only</h3>
+        <div class="check-pro" style="padding:14px;margin-bottom:12px"><div class="check-pro-head"><small>PRE-TRADE • MUST TICK ALL</small><b id="pretradePct2">0%</b></div><div class="check-progress"><i id="pretradeBar2" style="width:0%"></i></div><div id="preTradeList2"></div><button class="mini" onclick="tickAllPreTrade()">✅ Tick All For Testing</button></div>
+        <label>Setup *</label><select id="jSetup"><option value="">-- Select Setup --</option><option>Expiry Sweep + Reclaim</option><option>Expiry Range Rejection</option><option>Liquidity Sweep + BOS</option><option>London Open Breakout</option><option>King Level Reversal</option><option>Other - Must Explain</option></select>
+        <label>Pair *</label><select id="jPair"><option>EURUSD</option><option>GBPUSD</option><option>GBPJPY</option></select>
+        <label>Direction</label><select id="jDir"><option>BUY</option><option>SELL</option></select>
+        <label>Session</label><select id="jSession"><option>London</option><option>NY</option><option>Asia</option></select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Lot *</label><input id="jLot" type="number" step="0.01" placeholder="0.20"></div><div><label>SL Pips *</label><input id="jSL" type="number" placeholder="20"></div></div>
+        <label>Risk % *</label><input id="jRisk" type="number" step="0.1" placeholder="1">
+        <label>Result in R *</label><input id="jR" type="number" step="0.1" placeholder="2">
+        <label>PnL $ *</label><input id="jPnl" type="number" step="0.01" placeholder="20">
+        <label>Emotion</label><select id="jEmotion"><option>Patient</option><option>Confident</option><option>FOMO</option><option>Revenge</option><option>Scared</option><option>Bored</option></select>
+        <label>Note * Min 10 chars</label><textarea id="jNote" placeholder="Expiry level sweep, why I entered..."></textarea>
+        <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="guardTestMode" style="width:auto"> <span style="font-size:12px">Test Mode - Allow outside London / without routine</span></label>
+        <button class="primary" id="addBtn" onclick="addTrade()">➕ Add Trade & Update Dashboard</button><p id="addError" style="color:#ef4444;font-size:13px"></p>
+        <button class="ghost" onclick="testAddTrade()">🧪 Quick Test: Add $20 Win</button>
+        <button class="ghost" onclick="clearAll()">Reset THIS Account Only</button>
+      </div>
+      <div class="card"><h3>📓 Journal - Click To Review</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><button onclick="setJournalFilter('all')" style="background:var(--text);color:var(--bg);border:0;padding:6px 10px;border-radius:999px">All</button><button onclick="setJournalFilter('unreviewed')" style="background:var(--card2);color:var(--text);border:1px solid var(--border);padding:6px 10px;border-radius:999px">Unreviewed</button><button onclick="setJournalFilter('reviewed')" style="background:var(--card2);color:var(--text);border:1px solid var(--border);padding:6px 10px;border-radius:999px">Reviewed</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Pair / Setup</th><th>R / PnL</th><th>Grade</th><th>Review</th></tr></thead><tbody id="journalBody"></tbody></table></div>
+      </div>
+    </div>
+    <div id="preTradeList" style="display:none"></div>
+  </div>
+
+  <div class="panel" id="panel-calendar">
+    <div class="cal-header">
+      <div class="cal-title-row"><div><h2 class="cal-title" id="calTitle">November 2026 — FBS Real ☁️</h2><p class="cal-subtitle" id="calSubtitle">Live: Sun 19:15 EAT • Firebase Cloud</p></div><div class="cal-nav"><button onclick="changeMonth(-1)">◀ Prev</button><button onclick="goToday()">Today</button><button onclick="changeMonth(1)">Next ▶</button></div></div>
+      <p style="font-size:12px;color:var(--muted)" id="calMonthStats"></p>
+      <div class="cal-week"><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div>SUN</div></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div id="calDayDetail" style="margin-top:14px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;display:none"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-charts">
+    <h1 style="font-size:28px;margin:0 0 6px">Live Charts</h1><p style="color:var(--muted);font-size:13px">One chart. Switch pair with pills. No scrolling.</p>
+    <div class="chart-wrap">
+      <div class="chart-pills" id="chartPills">
+        <button class="chart-pill active" data-pair="EURUSD" onclick="switchChartPair('EURUSD')">EURUSD</button>
+        <button class="chart-pill" data-pair="GBPJPY" onclick="switchChartPair('GBPJPY')">GBPJPY</button>
+        <button class="chart-pill" data-pair="GBPUSD" onclick="switchChartPair('GBPUSD')">GBPUSD</button>
+        <span style="margin-left:auto;font-size:12px;color:var(--muted);align-self:center" id="chartPairLabel">EURUSD • Euro / U.S. Dollar • 15 • FXCM</span>
+      </div>
+      <iframe class="chart-frame" id="singleChart" src="https://www.tradingview.com/widgetembed/?symbol=OANDA%3AEURUSD&interval=15&theme=dark&style=1&timezone=Africa%2FNairobi&locale=en&hidesidetoolbar=0&hidetoptoolbar=0&withdateranges=1&hideideas=1"></iframe>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">Use timeframes inside chart: 1m • 5m • 30m • 1h • 15m • Indicators • Drawing tools.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="mini" onclick="setChartTF('1')">1m</button><button class="mini" onclick="setChartTF('5')">5m</button><button class="mini" onclick="setChartTF('30')">30m</button><button class="mini" onclick="setChartTF('15')">15m</button><button class="mini" onclick="setChartTF('60')">1h</button><button class="mini" onclick="setChartTF('240')">4h</button><button class="mini" onclick="setChartTF('D')">Daily</button></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-guard">
+    <div class="grid2">
+      <div class="card"><h3>🛡️ Trade Guard</h3><label>Max Trades / Day</label><input id="gMaxTrades" value="2"><label>Max Loss / Day $</label><input id="gMaxLoss" value="20"><label>Window</label><select id="gWindow"><option value="london">London Only 10:00-18:00 EAT</option><option value="any">Any Time (Test)</option></select><label>Cooldown (min)</label><input id="gCooldown" value="30"><button class="primary" onclick="saveGuard()">Save Guard</button><div class="guard-block" id="guardBlock">⛔ BLOCKED</div><div id="guardDetails" style="font-size:13px;margin-top:10px"></div></div>
+      <div class="card"><h3>📜 Rules</h3><div class="check-pro" style="padding:14px"><div class="check-pro-head"><small>RULES • PROGRESS</small><b id="rulesPct2">0%</b></div><div class="check-progress"><i id="rulesBar2" style="width:0%"></i></div><div id="rulesList2"></div><input class="check-add-input" id="add-rules2" placeholder="+ Add rule"><button class="check-add-btn" onclick="addFromInput2('rules')">Add</button></div><h3 style="margin-top:14px">📊 Today</h3><p id="todayGuardStats"></p></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-logins">
+    <h1 style="font-size:28px;margin:0 0 6px">🔑 Account Logins + Firebase</h1>
+    <p style="color:var(--muted);font-size:13px">Firebase Auth is your master restore. Save broker MT logins here too.</p>
+    <div class="card" style="background:#1e1b2e;border-color:#7c3aed"><h3>🔥 Firebase Account - kas-inc-flo</h3><p id="firebaseStatusText">Connecting...</p><label>Firebase Email</label><input id="firebaseEmailInput" type="email" placeholder="you@gmail.com"><label>Firebase Password</label><input id="firebasePassInput" type="password" placeholder="Min 6 chars"><button class="primary" onclick="firebaseSignUp()">🔥 Create Firebase Account (First Time)</button><button class="ghost" onclick="firebaseSignInFromLogins()">🔥 Login with Firebase Email Above</button><button class="ghost" onclick="firebaseSendResetFromLogins()">📧 Send Firebase Password Reset Email</button></div>
+    <div id="loginsList" style="margin-top:14px"></div>
+  </div>
+
+  <div class="footer"><span>KES EDGEFLO V9.9 • kas-inc-flo • Firebase Auth Restore</span><span id="clock"></span></div>
+</div>
+
+<div class="modal" id="loginModal"><div class="modal-box" style="max-width:440px;text-align:center">
+  <h2 style="margin:0">🔥 Firebase Login</h2><p style="color:var(--muted);font-size:13px">Account: <b id="loginAccName" style="color:var(--gold)"></b></p>
+  <p id="loginAccMeta" style="font-size:12px;color:var(--muted)"></p>
+  <div style="text-align:left;background:#1e1b2e;border:1px solid #7c3aed;border-radius:12px;padding:12px;margin:10px 0"><b style="color:#c4b5fd">🔥 Use Firebase Email to Restore</b><p style="font-size:12px;margin:6px 0">One email unlocks all 5 accounts. Forgot password? Firebase emails you a real reset link.</p></div>
+  <label style="text-align:left;display:block">Firebase Email</label><input id="loginEmail" type="email" placeholder="you@gmail.com" onkeydown="if(event.key==='Enter') doLogin()">
+  <label style="text-align:left;display:block">Firebase Password</label><input id="loginPass" type="password" placeholder="Your Firebase password" onkeydown="if(event.key==='Enter') doLogin()">
+  <label style="text-align:left;display:block">OR Local App Password (fallback)</label><input id="loginLocalPass" type="password" placeholder="e.g. real123">
+  <button class="primary" onclick="doLogin()">🔥 Login with Firebase →</button>
+  <button class="ghost" onclick="doLocalLogin()">Use Local Password Only</button>
+  <button class="ghost" onclick="firebaseSignUpFromLogin()">🆕 Create Firebase Account with This Email</button>
+  <span class="forgot-link" onclick="openRecovery()">📧 Forgot Password? Send Firebase Reset Email</span>
+  <p id="loginError" style="color:#ef4444;font-size:13px"></p>
+  <p style="font-size:12px;color:var(--muted2)">Local fallback: FBS Demo <b>demo123</b> • FBS Real <b>real123</b> • FBS Real 2 <b>real2123</b> • FP Live <b>fp123</b> • Funded <b>wmt123</b></p><button class="ghost" onclick="closeLogin()">Cancel</button>
+</div></div>
+
+<div class="modal" id="recoveryModal"><div class="modal-box" style="max-width:440px;text-align:center">
+  <h2 style="margin:0">📧 Firebase Password Reset</h2><p style="color:var(--muted);font-size:13px">Account: <b id="recoveryAccName" style="color:var(--gold)"></b></p>
+  <p style="font-size:12px;color:var(--muted)">Firebase will send a REAL reset email. Check inbox + spam.</p>
+  <label style="text-align:left;display:block">Your Firebase Email</label><input id="recoveryEmail" type="email" placeholder="you@gmail.com">
+  <button class="primary" onclick="doFirebaseRecovery()">📧 Send Reset Email →</button>
+  <p id="recoveryMsg" style="font-size:13px"></p>
+  <button class="ghost" onclick="closeRecovery()">Back to Login</button>
+</div></div>
+
+<div class="modal" id="passModal"><div class="modal-box" style="max-width:420px"><h3>Change Local Password - <span id="passAccName"></span></h3><p style="font-size:12px;color:var(--muted)">To change Firebase password, use Forgot Password → Firebase Reset Email.</p><label>Current Local</label><input id="oldPass" type="password"><label>New Local</label><input id="newPass" type="password"><label>Confirm</label><input id="newPass2" type="password"><button class="primary" onclick="changePassword()">Save New Local Password</button><button class="ghost" onclick="document.getElementById('passModal').classList.remove('open')">Close</button></div></div>
+<div class="modal" id="checkEditorModal"><div class="modal-box" style="max-width:480px"><h3 id="checkEditorTitle">Edit Item</h3><label>Item Text</label><textarea id="checkEditorText" rows="3"></textarea><label>Category</label><select id="checkEditorCat"><option value="routine">🔥 Routines</option><option value="process">⚙️ Process</option><option value="rules">📜 Rules</option><option value="pretrade">✅ Pre-Trade</option></select><button class="primary" onclick="saveChecklistEditor()">Save Item</button><button class="ghost" onclick="document.getElementById('checkEditorModal').classList.remove('open')">Cancel</button><button class="ghost" id="checkEditorDeleteBtn" onclick="deleteFromEditor()" style="color:#ef4444;display:none">🗑 Delete</button></div></div>
+<div class="modal" id="reviewModal"><div class="modal-box"><div style="display:flex;justify-content:space-between"><h3 id="reviewTitle">Review</h3><button onclick="closeReview()" style="background:var(--card2);color:var(--text);border:1px solid var(--border);padding:8px 12px;border-radius:999px;cursor:pointer">✕</button></div><p id="reviewMeta" style="font-size:13px;color:var(--muted)"></p><label>Grade</label><select id="revGrade"><option value="">-- Grade --</option><option>A - Perfect Plan</option><option>B - Good</option><option>C - Broke 1 Rule</option><option>F - Random / Revenge</option></select><label>Mistake</label><select id="revMistake"><option>None</option><option>FOMO</option><option>Revenge</option><option>No SL / Moved SL</option><option>Overlot</option><option>Early Exit</option><option>Late Entry</option><option>No Expiry Level</option></select><label>What I Did Right</label><textarea id="revRight"></textarea><label>Lesson</label><textarea id="revLesson"></textarea><label>Would I Take Again?</label><select id="revAgain"><option>Yes</option><option>No</option><option>Yes With Smaller Lot</option></select><label><input type="checkbox" id="revDone" style="width:auto"> Mark as Reviewed</label><button class="primary" onclick="saveReview()">Save Review</button><button class="ghost" onclick="deleteTrade()">🗑 Delete</button><button class="ghost" onclick="closeReview()">Close</button></div></div>
+
+<script>
+// ===== YOUR FIREBASE CONFIG - kas-inc-flo - ALREADY FIXED =====
+const firebaseConfig = {
+  apiKey: "AIzaSyCYquiePkvnDymfpqRf5nuBb0r6Wg-p0Ns",
+  authDomain: "kas-inc-flo.firebaseapp.com",
+  projectId: "kas-inc-flo",
+  storageBucket: "kas-inc-flo.firebasestorage.app",
+  messagingSenderId: "334313863243",
+  appId: "1:334313863243:web:0aa2ada3722126e01bb5ce"
+};
+let firebaseReady=false, firebaseUser=null, db=null;
+try{
+  firebase.initializeApp(firebaseConfig);
+  firebaseReady=true;
+  if(window.firebase && firebase.firestore) db=firebase.firestore();
+  firebase.auth().onAuthStateChanged(u=>{
+    firebaseUser=u;
+    let txt=document.getElementById('firebaseUserText'); if(txt) txt.textContent=u?`✅ Logged in as: ${u.email}`:'Not logged into Firebase';
+    let st=document.getElementById('firebaseStatusText'); if(st) st.textContent=u?`✅ Firebase connected as ${u.email} - Password reset emails will work.`:'Firebase ready for kas-inc-flo. Sign up / Login with your email.';
+    if(u) localStorage.setItem('kes_firebase_email', u.email);
+  });
+}catch(e){ console.log('Firebase init error', e); firebaseReady=false; }
+
+function applyTheme(t){ document.documentElement.setAttribute('data-theme',t); localStorage.setItem('kes_theme',t); document.getElementById('themeBtn').textContent=t==='dark'?'🌙 Dark':'☀️ Light'; let th=t==='dark'?'dark':'light'; let el=document.getElementById('singleChart'); if(el && !el.src.includes('theme='+th)) el.src=el.src.replace(/theme=(dark|light)/,'theme='+th); }
+function toggleTheme(){ applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+applyTheme(localStorage.getItem('kes_theme')||'dark');
+
+const ACCOUNTS={
+  fbsDemo:{name:'FBS Demo',broker:'FBS',defBal:10000,defPass:'demo123',maxLoss:100},
+  fbsReal:{name:'FBS Real',broker:'FBS',defBal:10.01,defPass:'real123',maxLoss:20},
+  fbsReal2:{name:'FBS Real 2',broker:'FBS',defBal:0,defPass:'real2123',maxLoss:20},
+  fpLive:{name:'FP Markets Live',broker:'FP Markets',defBal:0,defPass:'fp123',maxLoss:20},
+  funded:{name:'Funded Account',broker:'WeMasterTrade',defBal:5000,defPass:'wmt123',maxLoss:250}
+};
+let currentAcc=null,pendingAcc=null,trades=[],guard={maxTrades:2,maxLoss:20,window:'london',cooldown:30},deposit=0,withdrawn=0,wmt={bal:5000,today:0},journalFilter='all',currentReviewId=null,calView=new Date(),editListName='routine',editListIdx=-1;
+let depositTyping=false, withdrawTyping=false, calcPair='EURUSD', lastCalcLot=0.01, lastCalcSL=28, lastCalcRisk=1, chartPair='EURUSD', chartTF='15';
+
+function key(s){ return `kes_v99_${currentAcc}_${s}`; }
+function getPass(a){ return localStorage.getItem(`kes_v99_pass_${a}`)||localStorage.getItem(`kes_v98_pass_${a}`)||localStorage.getItem(`kes_v97_pass_${a}`)||ACCOUNTS[a].defPass; }
+function getLoginInfo(a){ try{ return JSON.parse(localStorage.getItem(`kes_v99_login_${a}`)||localStorage.getItem(`kes_v98_login_${a}`)||localStorage.getItem(`kes_v97_login_${a}`)||'{}'); }catch(e){ return {}; } }
+function saveLoginInfo(a,obj){ localStorage.setItem(`kes_v99_login_${a}`, JSON.stringify(obj)); }
+
+async function firebaseSignUp(){
+  let email=(document.getElementById('firebaseEmailInput')?.value || document.getElementById('loginEmail')?.value || '').trim();
+  let pass=(document.getElementById('firebasePassInput')?.value || document.getElementById('loginPass')?.value || '').trim();
+  if(!firebaseReady){ alert('Firebase not ready'); return; }
+  if(!email || !email.includes('@')){ alert('Enter a valid email'); return; }
+  if(!pass || pass.length<6){ alert('Firebase password must be min 6 chars'); return; }
+  try{
+    let cred=await firebase.auth().createUserWithEmailAndPassword(email, pass);
+    localStorage.setItem('kes_firebase_email', email);
+    alert('✅ Firebase account created: '+email+'\nNow login with that email + password.');
+    document.getElementById('loginEmail').value=email;
+  }catch(e){ alert('Firebase Sign Up error: '+e.message); }
+}
+async function firebaseSignUpFromLogin(){ await firebaseSignUp(); }
+async function firebaseSignIn(email, pass){
+  let cred=await firebase.auth().signInWithEmailAndPassword(email, pass);
+  localStorage.setItem('kes_firebase_email', email);
+  return cred.user;
+}
+async function firebaseSignInFromLogins(){
+  let email=document.getElementById('firebaseEmailInput').value.trim();
+  let pass=document.getElementById('firebasePassInput').value;
+  try{ await firebaseSignIn(email, pass); alert('✅ Firebase logged in: '+email); }catch(e){ alert('Firebase login error: '+e.message); }
+}
+async function firebaseSendReset(email){ await firebase.auth().sendPasswordResetEmail(email); return true; }
+async function firebaseSendResetFromLogins(){
+  let email=document.getElementById('firebaseEmailInput').value.trim();
+  if(!email) { alert('Enter your Firebase email first'); return; }
+  try{ await firebaseSendReset(email); alert('✅ Reset email sent to '+email+'\nCheck inbox + spam, click link, set new password.'); }catch(e){ alert('Reset error: '+e.message); }
+}
+
+function openLogin(a){
+  pendingAcc=a;
+  document.getElementById('loginAccName').textContent=ACCOUNTS[a].name;
+  let savedEmail=localStorage.getItem('kes_firebase_email')||getLoginInfo(a).email||'';
+  document.getElementById('loginEmail').value=savedEmail;
+  document.getElementById('loginPass').value=''; document.getElementById('loginLocalPass').value=''; document.getElementById('loginError').textContent='';
+  let info=getLoginInfo(a);
+  document.getElementById('loginAccMeta').textContent = (info.mtLogin?`MT Login: ${info.mtLogin} • `:'') + (savedEmail?`Firebase Email: ${savedEmail}`:'No Firebase email yet - Sign Up with your Gmail');
+  document.getElementById('loginModal').classList.add('open');
+  setTimeout(()=>document.getElementById('loginPass').focus(),100);
+}
+function closeLogin(){ document.getElementById('loginModal').classList.remove('open'); }
+async function doLogin(){
+  let email=document.getElementById('loginEmail').value.trim();
+  let pass=document.getElementById('loginPass').value;
+  if(email && pass && firebaseReady){
+    try{
+      await firebaseSignIn(email, pass);
+      currentAcc=pendingAcc; closeLogin(); loadAccount();
+      alert('✅ Firebase login success: '+email+'\nUnlocked '+ACCOUNTS[currentAcc].name);
+      return;
+    }catch(e){
+      document.getElementById('loginError').textContent='❌ Firebase: '+e.message+'\nTry local password below or Forgot Password → Reset Email.';
+      return;
+    }
+  }
+  let local=document.getElementById('loginLocalPass').value || pass;
+  if(local===getPass(pendingAcc)){ currentAcc=pendingAcc; closeLogin(); loadAccount(); }
+  else document.getElementById('loginError').textContent='❌ Wrong. Enter Firebase Email + Password, or Local Password: '+ACCOUNTS[pendingAcc].defPass;
+}
+function doLocalLogin(){
+  let local=document.getElementById('loginLocalPass').value || document.getElementById('loginPass').value;
+  if(local===getPass(pendingAcc)){ currentAcc=pendingAcc; closeLogin(); loadAccount(); }
+  else document.getElementById('loginError').textContent='❌ Wrong local password - Try: '+ACCOUNTS[pendingAcc].defPass;
+}
+async function logout(){
+  try{ if(firebaseReady) await firebase.auth().signOut(); }catch(e){}
+  let name=currentAcc?ACCOUNTS[currentAcc].name:'';
+  currentAcc=null; pendingAcc=null; trades=[]; deposit=0; withdrawn=0;
+  document.querySelectorAll('#accountBtns button').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelector('#nav button[data-page="dashboard"]')?.classList.add('active');
+  document.getElementById('dashAccName').textContent='- Login Required -';
+  document.getElementById('syncText').textContent='Locked - Login with Email';
+  document.getElementById('firebaseUserText').textContent='';
+  document.getElementById('accInfo').textContent=''; document.getElementById('debugAcc').textContent='Logged out';
+  document.getElementById('totalBal').textContent='--'; document.getElementById('deposited').textContent='--'; document.getElementById('withdrawn').textContent='--';
+  document.getElementById('closedPL').textContent='--'; document.getElementById('closedPct').textContent='--'; document.getElementById('todayPLText').textContent='Today: --';
+  document.getElementById('winRate').textContent='--'; document.getElementById('profitFactor').textContent='--'; document.getElementById('mostTraded').textContent='-';
+  document.getElementById('avgWinLoss').textContent='--'; document.getElementById('sideEdge').textContent='--'; document.getElementById('reviewCount').textContent='Reviews: -';
+  document.getElementById('balanceFormula').textContent=''; document.getElementById('tradesCountText').textContent='';
+  document.getElementById('depositInput').value=''; document.getElementById('withdrawInput').value='';
+  document.getElementById('journalBody').innerHTML='<tr><td colspan="5">🔒 Locked. Login to see trades.</td></tr>';
+  document.getElementById('calGrid').innerHTML='<p>🔒 Locked. Login to see calendar.</p>';
+  document.getElementById('guardBanner').textContent='🔒 Logged out. Login with Firebase Email to unlock.';
+  document.getElementById('guardBanner').className='guard-block';
+  document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open'));
+  showPanel('overview'); drawCandles(0);
+  alert('✅ Logged out from '+name+' (Firebase + Local)\nDashboard LOCKED.');
+}
+function openPasswordModal(){ if(!currentAcc){alert('Login first');return;} document.getElementById('passAccName').textContent=ACCOUNTS[currentAcc].name; document.getElementById('passModal').classList.add('open'); }
+function changePassword(){ let o=document.getElementById('oldPass').value,n=document.getElementById('newPass').value,n2=document.getElementById('newPass2').value; if(o!==getPass(currentAcc)){alert('Wrong current');return;} if(n.length<4){alert('Min 4');return;} if(n!==n2){alert('No match');return;} localStorage.setItem(`kes_v99_pass_${currentAcc}`,n); document.getElementById('passModal').classList.remove('open'); alert('✅ Local password changed to: '+n+'\nFor Firebase, use Forgot Password → Reset Email.'); }
+
+function openRecovery(){
+  if(!pendingAcc) pendingAcc='fbsReal';
+  document.getElementById('recoveryAccName').textContent=ACCOUNTS[pendingAcc].name;
+  document.getElementById('recoveryEmail').value=localStorage.getItem('kes_firebase_email')||'';
+  document.getElementById('recoveryMsg').textContent='';
+  document.getElementById('loginModal').classList.remove('open');
+  document.getElementById('recoveryModal').classList.add('open');
+}
+function closeRecovery(){ document.getElementById('recoveryModal').classList.remove('open'); document.getElementById('loginModal').classList.add('open'); }
+async function doFirebaseRecovery(){
+  let email=document.getElementById('recoveryEmail').value.trim();
+  if(!email || !email.includes('@')){ document.getElementById('recoveryMsg').textContent='Enter a valid email'; return; }
+  try{
+    await firebase.auth().sendPasswordResetEmail(email);
+    document.getElementById('recoveryMsg').style.color='#22c55e';
+    document.getElementById('recoveryMsg').innerHTML='✅ <b>Reset email sent to '+email+'</b><br>Check inbox + spam → Click link → Set new password → Come back and login with new password.<br>From: noreply@kas-inc-flo.firebaseapp.com';
+    localStorage.setItem('kes_firebase_email', email);
+  }catch(e){
+    document.getElementById('recoveryMsg').style.color='#ef4444';
+    document.getElementById('recoveryMsg').textContent='❌ '+e.message+'\nIf you never created Firebase account, click Create Firebase Account first.';
+  }
+}
+async function doRecovery(){ await doFirebaseRecovery(); }
+
+function renderLogins(){
+  let html='';
+  Object.keys(ACCOUNTS).forEach(k=>{
+    let info=getLoginInfo(k);
+    html+=`<div class="acc-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><b>${ACCOUNTS[k].name}</b><span class="pill pill-yellow">${ACCOUNTS[k].broker} • Local: ${getPass(k)}</span></div>
+      <p style="font-size:12px;color:var(--muted)">Firebase is master login. Save broker MT login here too.</p>
+      <div class="grid2" style="margin-top:0">
+        <div><label>MT4 / MT5 Login</label><input id="login-mt-${k}" value="${info.mtLogin||''}" placeholder="712228783"></div>
+        <div><label>Server</label><input id="login-server-${k}" value="${info.server||''}" placeholder="FBS-Real"></div>
+      </div>
+      <label>Broker Email</label><input id="login-email-${k}" type="email" value="${info.email||''}" placeholder="you@email.com">
+      <label>Broker Password (optional)</label><input id="login-brokerpass-${k}" value="${info.brokerPass||''}" placeholder="Broker password">
+      <label>Local App Password (fallback)</label><input id="login-apppass-${k}" value="${getPass(k)}">
+      <button class="primary" onclick="saveOneLogin('${k}')">💾 Save ${ACCOUNTS[k].name} Login</button>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px">Saved Email: <b style="color:var(--gold)">${info.email||'Not set'}</b> • MT: <b>${info.mtLogin||'Not set'}</b> • Firebase Email: <b>${localStorage.getItem('kes_firebase_email')||'Not set'}</b></p>
+    </div>`;
+  });
+  document.getElementById('loginsList').innerHTML=html;
+}
+function saveOneLogin(k){
+  let mt=document.getElementById(`login-mt-${k}`).value.trim();
+  let server=document.getElementById(`login-server-${k}`).value.trim();
+  let email=document.getElementById(`login-email-${k}`).value.trim();
+  let brokerPass=document.getElementById(`login-brokerpass-${k}`).value;
+  let appPass=document.getElementById(`login-apppass-${k}`).value.trim();
+  if(appPass && appPass.length>=4) localStorage.setItem(`kes_v99_pass_${k}`, appPass);
+  saveLoginInfo(k, {mtLogin:mt, server, email, brokerPass});
+  if(email) localStorage.setItem('kes_firebase_email', email);
+  alert(`✅ Saved ${ACCOUNTS[k].name}\nMT: ${mt||'-'}\nEmail: ${email||'-'}\nLocal: ${appPass||getPass(k)}`);
+  renderLogins();
+}
+
+function migrateOld(acc){
+  let cands=[`kes_v99_${acc}_trades`,`kes_v98_${acc}_trades`,`kes_v97_${acc}_trades`,`kes_v96_${acc}_trades`];
+  let oldMap={fbsDemo:'demo',fbsReal:'real',fbsReal2:'real2',funded:'funded'};
+  if(oldMap[acc]) cands.push(`kes_v98_${oldMap[acc]}_trades`,`kes_v97_${oldMap[acc]}_trades`,`kes_v96_${oldMap[acc]}_trades`,`kes_v95_${oldMap[acc]}_trades`);
+  for(let k of cands){ try{ let v=JSON.parse(localStorage.getItem(k)||'[]'); if(v&&v.length) return v; }catch(e){} }
+  return [];
+}
+function loadAccount(){
+  trades=localStorage.getItem(key('trades'))?JSON.parse(localStorage.getItem(key('trades'))):migrateOld(currentAcc);
+  trades=trades.map((t,i)=>({...t,id:t.id||Date.now()+i,r:parseFloat(t.r||0),pnl:parseFloat(t.pnl||0),lot:parseFloat(t.lot||0),sl:parseFloat(t.sl||0),risk:parseFloat(t.risk||1),reviewed:!!t.reviewed,grade:t.grade||'',mistake:t.mistake||'None',pair:t.pair||'EURUSD'}));
+  guard=JSON.parse(localStorage.getItem(key('guard'))||JSON.stringify({maxTrades:2,maxLoss:ACCOUNTS[currentAcc].maxLoss,window:'london',cooldown:30}));
+  let depRaw = localStorage.getItem(key('deposit')) ?? localStorage.getItem(`kes_v98_${currentAcc}_deposit`) ?? ACCOUNTS[currentAcc].defBal;
+  if(currentAcc==='fbsReal') depRaw = localStorage.getItem(key('deposit')) ?? localStorage.getItem('kes_v98_fbsReal_deposit') ?? localStorage.getItem('kes_v97_fbsReal_deposit') ?? localStorage.getItem('kes_v96_real_deposit') ?? depRaw;
+  deposit=parseFloat(depRaw); if(isNaN(deposit)) deposit=ACCOUNTS[currentAcc].defBal;
+  withdrawn=parseFloat(localStorage.getItem(key('withdrawn'))||'0'); if(isNaN(withdrawn)) withdrawn=0;
+  wmt=JSON.parse(localStorage.getItem(key('wmt'))||'{"bal":5000,"today":0}');
+  document.getElementById('dashAccName').textContent=ACCOUNTS[currentAcc].name; document.getElementById('syncText').textContent='kesflo • '+ACCOUNTS[currentAcc].name+' • Unlocked • '+(firebaseUser?firebaseUser.email:'Local');
+  document.getElementById('firebaseUserText').textContent=firebaseUser?`✅ ${firebaseUser.email}`:'Local mode';
+  document.getElementById('accInfo').textContent=ACCOUNTS[currentAcc].name;
+  document.querySelectorAll('#accountBtns button').forEach(b=>b.classList.toggle('active',b.dataset.acc===currentAcc));
+  document.getElementById('gMaxTrades').value=guard.maxTrades; document.getElementById('gMaxLoss').value=guard.maxLoss; document.getElementById('gWindow').value=guard.window; document.getElementById('gCooldown').value=guard.cooldown||30;
+  document.getElementById('depositInput').value=deposit; document.getElementById('withdrawInput').value=withdrawn; document.getElementById('wmtBalInput').value=wmt.bal; document.getElementById('wmtTodayInput').value=wmt.today;
+  let totalBal=deposit+trades.reduce((a,t)=>a+parseFloat(t.pnl||0),0)-withdrawn;
+  document.getElementById('calcBal').value=totalBal.toFixed(2);
+  calView=new Date(); saveAccount(); forceRefresh(); calcLotPro(); renderLogins();
+}
+function saveAccount(){ if(!currentAcc) return; localStorage.setItem(key('trades'),JSON.stringify(trades)); localStorage.setItem(key('guard'),JSON.stringify(guard)); localStorage.setItem(key('deposit'),String(deposit)); localStorage.setItem(key('withdrawn'),String(withdrawn)); localStorage.setItem(key('wmt'),JSON.stringify(wmt)); }
+function onDepositInput(){ if(!currentAcc) return; let v=parseFloat(document.getElementById('depositInput').value); if(isNaN(v)) v=0; deposit=v; saveAccount(); updateBalanceOnly(); document.getElementById('depositMsg').textContent='✅ Saved: $'+deposit.toFixed(2); syncCalcBal(); }
+function onWithdrawInput(){ if(!currentAcc) return; let v=parseFloat(document.getElementById('withdrawInput').value); if(isNaN(v)) v=0; withdrawn=v; saveAccount(); updateBalanceOnly(); syncCalcBal(); }
+function saveDeposit(){ onDepositInput(); alert('✅ Deposit saved: $'+deposit.toFixed(2)); }
+function saveWithdraw(){ onWithdrawInput(); alert('✅ Withdrawn saved'); }
+function addDeposit(amount){ if(!currentAcc){alert('Login first');return;} deposit+=amount; document.getElementById('depositInput').value=deposit; saveAccount(); updateBalanceOnly(); syncCalcBal(); }
+function syncCalcBal(){ let totalBal=deposit+trades.reduce((a,t)=>a+parseFloat(t.pnl||0),0)-withdrawn; let el=document.getElementById('calcBal'); if(el && document.activeElement!==el) el.value=totalBal.toFixed(2); calcLotPro(); updateQuickTable(); }
+function updateBalanceOnly(){ let totalPnl=trades.reduce((a,t)=>a+parseFloat(t.pnl||0),0); let totalBal=deposit+totalPnl-withdrawn; document.getElementById('totalBal').textContent='$'+totalBal.toFixed(2); document.getElementById('deposited').textContent='$'+deposit.toFixed(2); document.getElementById('withdrawn').textContent='$'+withdrawn.toFixed(2); document.getElementById('closedPL').textContent=(totalPnl>=0?'+$':'-$')+Math.abs(totalPnl).toFixed(2); document.getElementById('closedPct').textContent=(deposit?(totalPnl/deposit*100).toFixed(2):'0.00')+'% '+(totalPnl>=0?'▲':'▼'); document.getElementById('balanceFormula').textContent=`$${deposit.toFixed(2)} + $${totalPnl.toFixed(2)} - $${withdrawn.toFixed(2)} = $${totalBal.toFixed(2)}`; drawCandles(totalBal); }
+function forceRefresh(){ render(); }
+document.getElementById('depositInput').addEventListener('input', onDepositInput);
+document.getElementById('depositInput').addEventListener('change', onDepositInput);
+document.getElementById('depositInput').addEventListener('focus', ()=>depositTyping=true);
+document.getElementById('depositInput').addEventListener('blur', ()=>{ depositTyping=false; onDepositInput(); });
+document.getElementById('withdrawInput').addEventListener('input', onWithdrawInput);
+document.getElementById('withdrawInput').addEventListener('change', onWithdrawInput);
+document.getElementById('withdrawInput').addEventListener('focus', ()=>withdrawTyping=true);
+document.getElementById('withdrawInput').addEventListener('blur', ()=>{ withdrawTyping=false; onWithdrawInput(); });
+
+function buildChartUrl(pair, tf, theme){ let sym = pair==='EURUSD'?'OANDA%3AEURUSD':pair==='GBPUSD'?'OANDA%3AGBPUSD':'OANDA%3AGBPJPY'; return `https://www.tradingview.com/widgetembed/?symbol=${sym}&interval=${tf}&theme=${theme}&style=1&timezone=Africa%2FNairobi&locale=en&hidesidetoolbar=0&hidetoptoolbar=0&withdateranges=1&hideideas=1`; }
+function switchChartPair(pair){ chartPair=pair; document.querySelectorAll('.chart-pill').forEach(b=>b.classList.toggle('active', b.dataset.pair===pair)); let names={EURUSD:'EURUSD • Euro / U.S. Dollar • 15 • FXCM',GBPJPY:'GBPJPY • Pound / Yen • 15 • FXCM',GBPUSD:'GBPUSD • Pound / U.S. Dollar • 15 • FXCM'}; document.getElementById('chartPairLabel').textContent=names[pair]; let theme=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light'; document.getElementById('singleChart').src=buildChartUrl(pair, chartTF, theme); selectCalcPair(pair); }
+function setChartTF(tf){ chartTF=tf; let theme=document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light'; document.getElementById('singleChart').src=buildChartUrl(chartPair, tf, theme); }
+function showChart(p){ if(p==='ALL') switchChartPair('EURUSD'); else switchChartPair(p); }
+function pipValue(pair, jpyRate){ if(pair==='GBPJPY') return 100/(jpyRate||150)*10; return 10; }
+function calcLotFor(balance, riskPct, slPips, pair, jpyRate){ let riskAmt=balance*riskPct/100; let pv=pipValue(pair,jpyRate); let lot=riskAmt/(slPips*pv); return {riskAmt,pv,lot}; }
+function selectCalcPair(pair){ calcPair=pair; document.querySelectorAll('.pair-pill').forEach(b=>b.classList.toggle('active', b.dataset.pair===pair)); document.getElementById('resultPair').textContent=pair; calcLotPro(); }
+function calcLotPro(){
+  let bal=parseFloat(document.getElementById('calcBal').value||'0'); let risk=parseFloat(document.getElementById('calcRisk').value||'1'); let sl=parseFloat(document.getElementById('calcSLPips').value||'28'); let jpy=parseFloat(document.getElementById('calcJPY').value||'150'); let rr=parseFloat(document.getElementById('calcRR').value||'2');
+  if(!bal||!sl){ document.getElementById('resultLot').textContent='--'; return; }
+  let c=calcLotFor(bal,risk,sl,calcPair,jpy); let lot=Math.floor(c.lot*100)/100; if(lot<0.01) lot=0.01;
+  lastCalcLot=lot; lastCalcSL=sl; lastCalcRisk=risk; let tp=sl*rr; let slVal=lot*sl*c.pv;
+  document.getElementById('resultLot').textContent=lot.toFixed(2)+' lots';
+  document.getElementById('resultSub').textContent=`${calcPair} • Risk $${c.riskAmt.toFixed(2)} • SL ${sl} pips`;
+  document.getElementById('resultRiskAmt').textContent='$'+c.riskAmt.toFixed(2);
+  document.getElementById('resultPipVal').textContent='$'+c.pv.toFixed(2);
+  document.getElementById('resultSLVal').textContent='$'+slVal.toFixed(2)+' risk';
+  document.getElementById('resultTP').textContent=tp.toFixed(0)+' pips';
+  document.getElementById('calcResult').textContent=`Balance $${bal.toFixed(2)} • Risk ${risk}% = $${c.riskAmt.toFixed(2)} • Pip $${c.pv.toFixed(2)} • Lot ${lot.toFixed(2)} • TP ${tp.toFixed(0)} pips at ${rr}R`;
+  updateQuickTable();
+}
+function calcLot(){ calcLotPro(); }
+function updateQuickTable(){
+  let bal=parseFloat(document.getElementById('calcBal').value||'0'); let jpy=parseFloat(document.getElementById('calcJPY').value||'150');
+  document.getElementById('quickBal').textContent='$'+bal.toFixed(2);
+  let pairs=['EURUSD','GBPUSD','GBPJPY']; let ids={EURUSD:['qtEUR25','qtEUR30'],GBPUSD:['qtGBPUSD25','qtGBPUSD30'],GBPJPY:['qtGBPJPY25','qtGBPJPY30']};
+  pairs.forEach(p=>{ [25,30].forEach((sl,idx)=>{ let c=calcLotFor(bal,1,sl,p,jpy); let lot=Math.floor(c.lot*100)/100; if(lot<0.01) lot=0.01; let el=document.getElementById(ids[p][idx]); if(el) el.textContent=lot.toFixed(2)+' lots'; }); });
+}
+function useLotInJournal(){
+  if(!currentAcc){ alert('Login first'); return; }
+  document.getElementById('jPair').value=calcPair; document.getElementById('jLot').value=lastCalcLot.toFixed(2); document.getElementById('jSL').value=lastCalcSL; document.getElementById('jRisk').value=lastCalcRisk;
+  showPanel('journal'); alert(`✅ Lot ${lastCalcLot.toFixed(2)} • ${calcPair} • SL ${lastCalcSL} • Risk ${lastCalcRisk}% copied to Journal.`);
+}
+['calcBal','calcRisk','calcSLPips','calcJPY','calcRR'].forEach(id=>document.getElementById(id)?.addEventListener('input', calcLotPro));
+
+const DEFAULT_LISTS={routine:['Checked FX Expiry Levels (DTCC) - Marked Range','Marked Liquidity / Highs / Lows','Wrote Bias: Buy / Sell / No Trade','Set Max Risk & Max Trades (Trade Guard)','Phone on Do Not Disturb + Water Ready'],process:['Waited for Sweep / Liquidity Grab','Entry Only Inside Expiry Range','SL Placed Before Entry - Not Moved','Risk 1% Max - Lot Checked','TP Set - No Moving Target','Journaled Immediately After Close'],rules:['5% Risk Per Trade','Use Lot Size Calculator','Pin Bar + Displacement SL Placement on A + Setups','Targen The Next Opposing Zone or 3RR','Max Open Trade Limit 2'],pretrade:['I have a Setup - Not a gut feeling','I checked Expiry Range + King Level','SL in pips is set - I will not move it','Lot size is Safe Lot or less','I am NOT chasing - I waited for my level','Risk % is within limit']};
+function getList(name){ let s=localStorage.getItem(key('list_'+name))||localStorage.getItem(`kes_v98_${currentAcc}_list_${name}`); if(s) return JSON.parse(s); localStorage.setItem(key('list_'+name),JSON.stringify(DEFAULT_LISTS[name])); return [...DEFAULT_LISTS[name]]; }
+function saveList(name,arr){ localStorage.setItem(key('list_'+name),JSON.stringify(arr)); }
+function tickKey(name,idx){ return key(`tick_${name}_${idx}_${new Date().toDateString()}`); }
+function toggleCheck(name,idx){ if(!currentAcc) return; let cur=localStorage.getItem(tickKey(name,idx))==='1'; localStorage.setItem(tickKey(name,idx), cur?'0':'1'); render(); }
+function addFromInput(name){ let el=document.getElementById('add-'+name); let txt=el.value.trim(); if(!txt){ el.focus(); return; } let arr=getList(name); arr.push(txt); saveList(name,arr); el.value=''; render(); }
+function addFromInput2(name){ let el=document.getElementById('add-'+name+'2'); let txt=el.value.trim(); if(!txt) return; let arr=getList(name); arr.push(txt); saveList(name,arr); el.value=''; render(); }
+function deleteChecklistItem(name,idx){ if(!confirm('Delete this item?')) return; let arr=getList(name); arr.splice(idx,1); saveList(name,arr); render(); }
+function openChecklistEditor(name,idx){ editListName=name; editListIdx=idx; let arr=getList(name); document.getElementById('checkEditorCat').value=name; document.getElementById('checkEditorText').value=idx>=0?arr[idx]:''; document.getElementById('checkEditorTitle').textContent=idx>=0?'Edit Checklist Item':'Add New Checklist Item'; document.getElementById('checkEditorDeleteBtn').style.display=idx>=0?'block':'none'; document.getElementById('checkEditorModal').classList.add('open'); }
+function saveChecklistEditor(){ let txt=document.getElementById('checkEditorText').value.trim(); if(!txt){alert('Type text');return;} let cat=document.getElementById('checkEditorCat').value; let arr=getList(cat); if(editListIdx>=0&&cat===editListName) arr[editListIdx]=txt; else arr.push(txt); saveList(cat,arr); document.getElementById('checkEditorModal').classList.remove('open'); render(); }
+function deleteFromEditor(){ if(!confirm('Delete?')) return; let arr=getList(editListName); arr.splice(editListIdx,1); saveList(editListName,arr); document.getElementById('checkEditorModal').classList.remove('open'); render(); }
+function tickAllPreTrade(){ getList('pretrade').forEach((_,i)=>localStorage.setItem(tickKey('pretrade',i),'1')); getList('routine').forEach((_,i)=>localStorage.setItem(tickKey('routine',i),'1')); render(); }
+function checklistDone(name){ let a=getList(name); return a.length>0 && a.every((_,i)=>localStorage.getItem(tickKey(name,i))==='1'); }
+function checklistPct(name){ let a=getList(name); if(!a.length) return 0; let d=a.filter((_,i)=>localStorage.getItem(tickKey(name,i))==='1').length; return Math.round(d/a.length*100); }
+function renderOneChecklist(name, containerId){
+  let arr=getList(name); let pct=checklistPct(name);
+  let html=arr.map((txt,i)=>{ let done=localStorage.getItem(tickKey(name,i))==='1'; return `<div class="check-row ${done?'done':''}"><div class="check-circle" onclick="event.stopPropagation();toggleCheck('${name}',${i})">${done?'✓':''}</div><div class="check-main" onclick="openChecklistEditor('${name}',${i})"><div class="check-title">${txt}</div><div class="check-sub">${done?'Completed ✓ — Tap circle to undo':'Tap to complete'}</div></div><label class="switch" onclick="event.stopPropagation()"><input type="checkbox" ${done?'checked':''} onchange="toggleCheck('${name}',${i})"><span class="switch-slider"></span></label><button class="check-edit" onclick="event.stopPropagation();openChecklistEditor('${name}',${i})" title="Edit">✏️</button><button class="check-x" onclick="event.stopPropagation();deleteChecklistItem('${name}',${i})" title="Delete">✕</button></div>`; }).join('') || '<p style="font-size:13px;color:var(--muted)">No items yet. Type below and Add.</p>';
+  let el=document.getElementById(containerId); if(el) el.innerHTML=html; return pct;
+}
+function renderChecklists(){
+  if(!currentAcc) return;
+  let r=renderOneChecklist('routine','routineList'); let p=renderOneChecklist('process','processList'); let ru=renderOneChecklist('rules','rulesList'); let pt=renderOneChecklist('pretrade','preTradeList');
+  renderOneChecklist('pretrade','preTradeList2'); renderOneChecklist('rules','rulesList2');
+  let set=(id,val)=>{ let e=document.getElementById(id); if(e) e.textContent=val+'%'; let b=document.getElementById(id.replace('Pct','Bar')); if(b) b.style.width=val+'%'; };
+  set('routinePct',r); set('processPct',p); set('rulesPct',ru); set('pretradePct',pt); set('pretradePct2',pt); set('rulesPct2',ru);
+  let b2=document.getElementById('pretradeBar2'); if(b2) b2.style.width=pt+'%'; let rb2=document.getElementById('rulesBar2'); if(rb2) rb2.style.width=ru+'%';
+}
+function resetChecklists(){ if(!currentAcc) return; if(confirm('Reset today ticks only? Items stay.')){ ['routine','process','rules','pretrade'].forEach(n=>getList(n).forEach((_,i)=>localStorage.removeItem(tickKey(n,i)))); render(); } }
+document.addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.id && e.target.id.startsWith('add-')){ let name=e.target.id.replace('add-','').replace('2',''); if(e.target.id==='add-rules2') addFromInput2('rules'); else addFromInput(name); } });
+
+function isLondon(){ if(guard.window==='any') return true; if(document.getElementById('guardTestMode')?.checked) return true; let h=new Date().getHours(); return h>=10&&h<18; }
+function getCooldown(){ let t=trades.filter(x=>x.date===new Date().toDateString()); if(t.length<2) return 0; let l=t.slice(-2); if(l.every(x=>x.r<0)) return Math.max(0,guard.cooldown-Math.floor((Date.now()-(l[1].fullTime||Date.now()))/60000)); return 0; }
+function guardCheck(){
+  if(!currentAcc) return {ok:false,errors:['Login first']};
+  let e=[]; let testMode=document.getElementById('guardTestMode')?.checked;
+  if(!testMode){ if(!checklistDone('routine')) e.push('Routine incomplete'); if(!checklistDone('pretrade')) e.push('Pre-Trade incomplete'); if(!isLondon()) e.push('Outside London'); }
+  let today=trades.filter(t=>t.date===new Date().toDateString()); if(today.length>=guard.maxTrades && !testMode) e.push(`Max ${guard.maxTrades} trades`); let tp=today.reduce((a,t)=>a+t.pnl,0);
+  if(currentAcc!=='funded' && tp<=-guard.maxLoss) e.push(`Daily loss $${guard.maxLoss} hit`);
+  if(currentAcc==='funded'){ if(wmt.today<=-250) e.push('Funded Daily $250 hit'); if((wmt.bal-5000)<=-500) e.push('Funded Max $500 hit'); }
+  let cd=getCooldown(); if(cd>0 && !testMode) e.push(`Cooldown ${cd} min`);
+  let setup=document.getElementById('jSetup')?.value, note=document.getElementById('jNote')?.value?.trim(), lot=parseFloat(document.getElementById('jLot')?.value||'0'), sl=parseFloat(document.getElementById('jSL')?.value||'0'), risk=parseFloat(document.getElementById('jRisk')?.value||'0'), emo=document.getElementById('jEmotion')?.value;
+  if(!setup) e.push('NO SETUP'); if(!note||note.length<10) e.push('NOTE too short'); if(!sl||sl<5) e.push('SL missing'); if(!lot||lot<=0) e.push('Lot missing'); if(currentAcc==='funded'&&lot>0.36) e.push('Lot 0.36 max'); if(currentAcc==='funded'&&risk>1) e.push('Risk max 1%'); if(currentAcc!=='funded'&&risk>2) e.push('Risk max 2%'); if(['FOMO','Revenge','Bored'].includes(emo)) e.push(`Emotion ${emo}`);
+  return {ok:e.length===0,errors:e,cooldown:cd};
+}
+function updateGuardBanner(){ let c=guardCheck(); let b=document.getElementById('guardBanner'); if(!currentAcc){ b.className='guard-block'; b.style.display='block'; b.innerHTML='🔒 Login'; return; } if(c.ok){ b.className='guard-ok'; b.innerHTML='✅ GUARD CLEAR - '+ACCOUNTS[currentAcc].name; } else { b.className='guard-block'; b.style.display='block'; b.innerHTML='⛔ BLOCKED: '+c.errors.join(' • '); } document.getElementById('addBtn').disabled=!c.ok; document.getElementById('addError').textContent=c.ok?'':c.errors.join(' | '); document.getElementById('guardBlock').style.display=c.ok?'none':'block'; document.getElementById('guardBlock').textContent=c.ok?'':'⛔ '+c.errors.join(' • '); document.getElementById('guardDetails').innerHTML=c.ok?'All gates passed.':c.errors.map(x=>'⛔ '+x).join('<br>'); document.getElementById('cooldownText').textContent=c.cooldown>0?`⏳ Cooldown ${c.cooldown} min`:''; }
+function addTrade(){
+  if(!currentAcc){ alert('Login first'); return; }
+  let c=guardCheck(); if(!c.ok){ alert('⛔ BLOCKED:\n\n'+c.errors.join('\n\n')); return; }
+  let rVal=parseFloat(document.getElementById('jR').value); let pnlVal=parseFloat(document.getElementById('jPnl').value);
+  if(isNaN(rVal)){ alert('Enter R e.g. 2 or -1'); return; } if(isNaN(pnlVal)){ alert('Enter PnL e.g. 20 or -10'); return; }
+  let tr={id:Date.now(),date:new Date().toDateString(),fullTime:Date.now(),time:new Date().toLocaleTimeString(),pair:document.getElementById('jPair').value,dir:document.getElementById('jDir').value,session:document.getElementById('jSession').value,setup:document.getElementById('jSetup').value,lot:parseFloat(document.getElementById('jLot').value),sl:parseFloat(document.getElementById('jSL').value),risk:parseFloat(document.getElementById('jRisk').value),r:rVal,pnl:pnlVal,emotion:document.getElementById('jEmotion').value,note:document.getElementById('jNote').value,grade:'',mistake:'None',lesson:'',right:'',again:'Yes',reviewed:false};
+  trades.push(tr); if(currentAcc==='funded'){ wmt.today+=tr.pnl; wmt.bal+=tr.pnl; } saveAccount();
+  document.getElementById('jNote').value=''; document.getElementById('jPnl').value=''; document.getElementById('jR').value='';
+  forceRefresh(); showPanel('overview'); alert('✅ SAVED! Total now $'+(deposit+trades.reduce((a,t)=>a+t.pnl,0)-withdrawn).toFixed(2));
+}
+function testAddTrade(){ if(!currentAcc){alert('Login first');return;} document.getElementById('jSetup').value='Expiry Sweep + Reclaim'; document.getElementById('jPair').value='EURUSD'; document.getElementById('jDir').value='BUY'; document.getElementById('jLot').value='0.20'; document.getElementById('jSL').value='20'; document.getElementById('jRisk').value='1'; document.getElementById('jR').value='2'; document.getElementById('jPnl').value='20'; document.getElementById('jEmotion').value='Patient'; document.getElementById('jNote').value='Test - Expiry sweep low reclaim'; document.getElementById('guardTestMode').checked=true; tickAllPreTrade(); addTrade(); }
+function clearAll(){ if(!currentAcc) return; if(confirm('Clear THIS account?')){ trades=[]; saveAccount(); forceRefresh(); } }
+function deleteTrade(){ if(!currentReviewId) return; if(confirm('Delete?')){ trades=trades.filter(t=>t.id!==currentReviewId); saveAccount(); closeReview(); render(); } }
+function setJournalFilter(f){ journalFilter=f; render(); }
+function openReviewList(){ showPanel('journal'); setJournalFilter('unreviewed'); }
+function openReview(id){ let t=trades.find(x=>x.id===id); if(!t) return; currentReviewId=id; document.getElementById('reviewTitle').textContent=`Review: ${t.pair} ${t.dir} - ${t.setup||''}`; document.getElementById('reviewMeta').textContent=`${t.date} ${t.time||''} • Lot ${t.lot} • SL ${t.sl} • R ${t.r} • $${t.pnl} • ${t.emotion} • ${t.note||''}`; document.getElementById('revGrade').value=t.grade||''; document.getElementById('revMistake').value=t.mistake||'None'; document.getElementById('revRight').value=t.right||''; document.getElementById('revLesson').value=t.lesson||''; document.getElementById('revAgain').value=t.again||'Yes'; document.getElementById('revDone').checked=!!t.reviewed; document.getElementById('reviewModal').classList.add('open'); }
+function closeReview(){ document.getElementById('reviewModal').classList.remove('open'); currentReviewId=null; }
+function saveReview(){ let t=trades.find(x=>x.id===currentReviewId); if(!t) return; t.grade=document.getElementById('revGrade').value; t.mistake=document.getElementById('revMistake').value; t.right=document.getElementById('revRight').value; t.lesson=document.getElementById('revLesson').value; t.again=document.getElementById('revAgain').value; t.reviewed=document.getElementById('revDone').checked; saveAccount(); closeReview(); render(); }
+function changeMonth(d){ calView.setMonth(calView.getMonth()+d); renderCalendar(); }
+function goToday(){ calView=new Date(); renderCalendar(); }
+function renderCalendar(){
+  if(!currentAcc){ document.getElementById('calGrid').innerHTML='<p>🔒 Locked</p>'; return; }
+  let y=calView.getFullYear(),m=calView.getMonth(); document.getElementById('calTitle').textContent=`${calView.toLocaleString('en',{month:'long'})} ${y} — ${ACCOUNTS[currentAcc].name} ☁️`; let now=new Date(); document.getElementById('calSubtitle').textContent=`Live: ${now.toLocaleString('en',{weekday:'short'})} ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} EAT • Firebase Cloud`;
+  let first=new Date(y,m,1), last=new Date(y,m+1,0); let startOffset=(first.getDay()+6)%7; let html=''; for(let i=0;i<startOffset;i++) html+='<div></div>';
+  let monthPnl=0,winDays=0,lossDays=0; for(let d=1; d<=last.getDate(); d++){ let ds=new Date(y,m,d).toDateString(); let dt=trades.filter(t=>t.date===ds); let pnl=dt.reduce((a,t)=>a+t.pnl,0); monthPnl+=pnl; if(dt.length){ if(pnl>0) winDays++; else if(pnl<0) lossDays++; } let cls=dt.length?(pnl>0?'win':pnl<0?'loss':''):''; if(ds===new Date().toDateString()) cls+=' today'; let pairs=dt.map(t=>`${t.pair} $${t.pnl>=0?'+':''}${t.pnl.toFixed(2)}`).join('<br>'); html+=`<div class="cal-day ${cls}" onclick="showDayDetail('${ds}')"><b>${d}</b>${dt.length?`<div style="font-weight:800;color:${pnl>=0?'#22c55e':'#ef4444'}">${pnl>=0?'▲':'▼'} $${pnl.toFixed(2)}</div><div style="font-size:11px">${pairs}</div>`:`<div class="no-trade">No trade</div>`}</div>`; }
+  document.getElementById('calGrid').innerHTML=html; document.getElementById('calMonthStats').innerHTML=`Month P/L: $${monthPnl.toFixed(2)} • Win Days ${winDays} • Loss Days ${lossDays}`;
+}
+function showDayDetail(ds){ let dt=trades.filter(t=>t.date===ds); let el=document.getElementById('calDayDetail'); el.style.display='block'; if(!dt.length){ el.innerHTML=`<b>${ds}</b><p>No trade</p>`; return; } let pnl=dt.reduce((a,t)=>a+t.pnl,0); el.innerHTML=`<b>${ds} - $${pnl.toFixed(2)} - ${dt.length} trades</b>`+dt.map(t=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>${t.pair} ${t.dir} • ${t.setup} • ${t.r}R • $${t.pnl}</span><button class="mini" onclick="openReview(${t.id})">Review →</button></div>`).join(''); }
+function saveGuard(){ if(!currentAcc) return; guard={maxTrades:+document.getElementById('gMaxTrades').value,maxLoss:+document.getElementById('gMaxLoss').value,window:document.getElementById('gWindow').value,cooldown:+document.getElementById('gCooldown').value||30}; saveAccount(); render(); alert('Guard saved'); }
+function saveWMT(){ wmt={bal:parseFloat(document.getElementById('wmtBalInput').value||'5000'),today:parseFloat(document.getElementById('wmtTodayInput').value||'0')}; saveAccount(); render(); }
+function calcWMTLot(){ let sl=+document.getElementById('wmtSL').value||20; document.getElementById('wmtLotResult').innerHTML=`Safe Lot = <b>${(50/(sl*10)).toFixed(2)}</b>`; }
+function saveExpiry(){ let u=document.getElementById('expUpper').value,l=document.getElementById('expLower').value,k=document.getElementById('expKing').value; document.getElementById('expResult').innerHTML=`<b>${document.getElementById('expPair').value} ${l} - ${u}</b><br>King ${k}`; }
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>{ document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); let map={dashboard:'overview',wmt:'wmt',calculator:'calculator',routines:'routines',process:'process',rules:'rules',journal:'journal',calendar:'calendar',charts:'charts',guard:'guard',logins:'logins'}; showPanel(map[b.dataset.page]||'overview'); }));
+document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.tab)));
+function showPanel(name){ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); let el=document.getElementById('panel-'+name); if(el) el.classList.add('active'); document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name)); window.scrollTo({top:0,behavior:'smooth'}); if(name==='logins') renderLogins(); if(name==='calculator'){ calcLotPro(); updateQuickTable(); } if(name==='calendar') renderCalendar(); }
+document.querySelectorAll('#accountBtns button').forEach(b=>b.addEventListener('click',()=>openLogin(b.dataset.acc)));
+['jSetup','jNote','jLot','jSL','jRisk','jEmotion','jPair'].forEach(id=>document.getElementById(id)?.addEventListener('input',()=>updateGuardBanner()));
+document.getElementById('searchInput').addEventListener('input',e=>{ let q=e.target.value.toLowerCase(); document.querySelectorAll('#journalBody tr').forEach(tr=>{ tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none'; }); });
+function render(){
+  if(!currentAcc){ drawCandles(0); return; }
+  renderChecklists();
+  if(!depositTyping) document.getElementById('depositInput').value=deposit;
+  if(!withdrawTyping) document.getElementById('withdrawInput').value=withdrawn;
+  let totalPnl=trades.reduce((a,t)=>a+parseFloat(t.pnl||0),0); let totalBal=deposit+totalPnl-withdrawn;
+  document.getElementById('totalBal').textContent='$'+totalBal.toFixed(2);
+  document.getElementById('deposited').textContent='$'+deposit.toFixed(2);
+  document.getElementById('withdrawn').textContent='$'+withdrawn.toFixed(2);
+  document.getElementById('closedPL').textContent=(totalPnl>=0?'+$':'-$')+Math.abs(totalPnl).toFixed(2); document.getElementById('closedPL').className=totalPnl>=0?'green':'red';
+  document.getElementById('closedPct').textContent=(deposit?(totalPnl/deposit*100).toFixed(2):'0.00')+'% '+(totalPnl>=0?'▲':'▼');
+  document.getElementById('balanceFormula').textContent=`$${deposit.toFixed(2)} + $${totalPnl.toFixed(2)} - $${withdrawn.toFixed(2)} = $${totalBal.toFixed(2)}`;
+  document.getElementById('tradesCountText').textContent=trades.length+' trades in '+ACCOUNTS[currentAcc].name;
+  document.getElementById('debugAcc').textContent='Loaded: '+trades.length+' trades • Deposit $'+deposit.toFixed(2)+' • Total $'+totalBal.toFixed(2);
+  let todayTrades=trades.filter(t=>t.date===new Date().toDateString()); let todayPnl=todayTrades.reduce((a,t)=>a+parseFloat(t.pnl||0),0);
+  document.getElementById('todayPLText').textContent=`Today: $${todayPnl.toFixed(2)} • ${todayTrades.length} trades`;
+  let wins=trades.filter(t=>parseFloat(t.r)>0).length, losses=trades.filter(t=>parseFloat(t.r)<=0).length; let winRate=trades.length?Math.round(wins/trades.length*100):0;
+  document.getElementById('winRate').textContent=winRate+'%'; document.getElementById('winLossText').textContent=wins+'W / '+losses+'L'; document.getElementById('winBar').style.width=winRate+'%';
+  let gw=trades.filter(t=>parseFloat(t.pnl)>0).reduce((a,t)=>a+parseFloat(t.pnl),0), gl=Math.abs(trades.filter(t=>parseFloat(t.pnl)<0).reduce((a,t)=>a+parseFloat(t.pnl),0))||1; let pf=(gw/gl).toFixed(2); document.getElementById('profitFactor').textContent=pf; document.getElementById('pfBar').style.width=Math.min(100,pf*30)+'%';
+  let counts={}; trades.forEach(t=>counts[t.pair]=(counts[t.pair]||0)+1); let most=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0]||'-'; document.getElementById('mostTraded').textContent=most; document.getElementById('mostTradedSub').textContent=most==='-'?'Edge pair':(counts[most]+' trades');
+  let avgWin=wins?(trades.filter(t=>parseFloat(t.pnl)>0).reduce((a,t)=>a+parseFloat(t.pnl),0)/wins):0; let avgLoss=losses?Math.abs(trades.filter(t=>parseFloat(t.pnl)<0).reduce((a,t)=>a+parseFloat(t.pnl),0)/losses):0; document.getElementById('avgWinLoss').textContent='$'+avgWin.toFixed(0)+' / $'+avgLoss.toFixed(0);
+  let avgR=trades.length?(trades.reduce((a,t)=>a+parseFloat(t.r||0),0)/trades.length).toFixed(2):'0.00'; document.getElementById('avgRText').textContent='Avg '+avgR+'R';
+  let sess=s=>{let w=trades.filter(t=>t.session===s&&parseFloat(t.r)>0).length,l=trades.filter(t=>t.session===s&&parseFloat(t.r)<=0).length;return w+'W / '+l+'L';}; document.getElementById('londonStats').textContent=sess('London'); document.getElementById('nyStats').textContent=sess('NY'); document.getElementById('asiaStats').textContent=sess('Asia');
+  let reviewed=trades.filter(t=>t.reviewed).length; document.getElementById('reviewCount').textContent=`Reviews: ${reviewed} / ${trades.length}`;
+  let discipline=trades.length?Math.max(0,100-trades.filter(t=>['FOMO','Revenge'].includes(t.emotion)).length*15 - trades.filter(t=>!t.reviewed).length*5):100; let edge=trades.length?Math.round(winRate*0.4+Math.min(100,parseFloat(avgR)*30+50)*0.3+discipline*0.3):100;
+  document.getElementById('sideEdge').textContent=edge; document.getElementById('sideEdgeBar').style.width=edge+'%';
+  document.getElementById('wmtBal').textContent='$'+wmt.bal.toFixed(0); document.getElementById('wmtDaily').textContent='$'+(250+wmt.today).toFixed(0)+' left'; document.getElementById('wmtMax').textContent='$'+(500+(wmt.bal-5000)).toFixed(0)+' left'; document.getElementById('wmtBar').style.width=Math.max(0,Math.min(100,(wmt.bal-5000)/400*100))+'%'; document.getElementById('wmtTargetText').textContent=`$${(wmt.bal-5000).toFixed(0)} / $400`; document.getElementById('wmtProgress').textContent=currentAcc==='funded'?`Funded: $${(wmt.bal-5000).toFixed(0)} / $400`:'';
+  document.getElementById('todayGuardStats').textContent=`Today: ${todayTrades.length}/${guard.maxTrades} • P/L $${todayPnl.toFixed(2)}`;
+  let list=trades.slice().reverse(); if(journalFilter==='unreviewed') list=list.filter(t=>!t.reviewed); if(journalFilter==='reviewed') list=list.filter(t=>t.reviewed);
+  document.getElementById('journalBody').innerHTML=list.map(t=>`<tr onclick="openReview(${t.id})" style="cursor:pointer"><td>${t.date}<br><small>${t.time||''}</small></td><td>${t.pair} ${t.dir}<br><small>${t.setup||''} • ${t.session}</small><br><small>${t.reviewed?'✅ Reviewed':'⚠️ Click to Review'}</small></td><td style="color:${parseFloat(t.r)>0?'#22c55e':'#ef4444'}">${t.r}R<br>$${t.pnl}</td><td>${t.grade?`<span class="pill ${t.grade.startsWith('A')?'pill-green':t.grade.startsWith('F')?'pill-red':'pill-yellow'}">${t.grade.split(' - ')[0]}</span>`:'-'}<br><small>${t.mistake||''}</small></td><td><button onclick="event.stopPropagation();openReview(${t.id})" style="background:var(--gold);border:0;padding:6px 10px;border-radius:999px;cursor:pointer;font-weight:700">Review →</button></td></tr>`).join('')||'<tr><td colspan="5">No trades yet.</td></tr>';
+  let fomo=trades.filter(t=>t.emotion==='FOMO').length, rev=trades.filter(t=>t.emotion==='Revenge').length; document.getElementById('aiReport').textContent=`${ACCOUNTS[currentAcc].name} • ${trades.length} trades • Win ${winRate}% • Avg ${avgR}R • FOMO ${fomo} • Revenge ${rev}`;
+  updateGuardBanner(); renderCalendar(); drawCandles(totalBal); document.getElementById('clock').textContent=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+' • Kakamega • '+ACCOUNTS[currentAcc].name;
+}
+function drawCandles(totalBal){ let canvas=document.getElementById('candleCanvas'); let ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--card2'); ctx.fillRect(0,0,canvas.width,canvas.height); if(!currentAcc){ ctx.fillStyle='#6b7280'; ctx.font='16px Inter'; ctx.fillText('🔒 Locked - Login with Firebase Email',20,140); return; } let data=trades.slice(-20); if(!data.length){ctx.fillStyle='#6b7280';ctx.font='16px Inter';ctx.fillText('No trades yet in this account',20,140);return;} let bal=deposit-withdrawn; let pts=[]; data.forEach(t=>{let o=bal; bal+=parseFloat(t.pnl||0); pts.push({o,c:bal,h:Math.max(o,bal)+Math.abs(parseFloat(t.pnl||0))*0.3,l:Math.min(o,bal)-Math.abs(parseFloat(t.pnl||0))*0.3});}); let all=[...pts.map(p=>p.h),...pts.map(p=>p.l),deposit]; let max=Math.max(...all), min=Math.min(...all); let range=(max-min)||1; let cw=canvas.width/(pts.length*1.6); let x0=20; pts.forEach((p,i)=>{let x=x0+i*(cw+18); let yH=20+(max-p.h)/range*(canvas.height-50); let yL=20+(max-p.l)/range*(canvas.height-50); let yO=20+(max-p.o)/range*(canvas.height-50); let yC=20+(max-p.c)/range*(canvas.height-50); let isWin=p.c>=p.o; ctx.strokeStyle=isWin?'#22c55e':'#ef4444'; ctx.fillStyle=isWin?'#22c55e':'#ef4444'; ctx.beginPath(); ctx.moveTo(x+cw/2,yH); ctx.lineTo(x+cw/2,yL); ctx.stroke(); let top=Math.min(yO,yC), h=Math.max(6,Math.abs(yC-yO)); ctx.fillRect(x,top,cw,h);}); ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--text'); ctx.font='bold 14px Inter'; ctx.fillText('Equity: $'+totalBal.toFixed(2)+' • '+data.length+' candles',16,18); }
+renderLogins();
+drawCandles(0);
+setInterval(()=>{ if(currentAcc) render(); },30000);
+</script>
+</body>
+</html>
